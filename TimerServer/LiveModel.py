@@ -1,5 +1,16 @@
 import MySQLdb
-PORT = "http://127.0.0.1/"
+PORT = "http://127.0.0.1:8000/"
+
+import logging
+
+fh = logging.FileHandler("test.log", "w")
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+fh.setFormatter(formatter)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger('jobs')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="", db="resource" )
 
@@ -14,14 +25,15 @@ class liveModel(object):
 		try:
 			self.cursor.execute(execute_String)
 		except Exception, e:
-			print e
-			print "501 write resource database error"
+			logger.error(e)
+			logger.error("501 write resource database error")
 		vid = self.cursor.lastrowid
 		try:
-			interface = PORT+"read_m3u8_live"+str(vid)+".m3u?vid="+str(vid)
+			interface = PORT+"pptvlive/readlivem3u8"+str(vid)+".m3u?vid="+str(vid)
 			execute_String = "UPDATE m3u8live SET interface = %s  WHERE vid = %s"
 			self.cursor.execute(execute_String, (interface, vid))
 		except Exception, e:
-			print e
-			print "501 url update error"
+			logger.error(e)
+			logger.error("503 url update error")
 			vid = 0
+		return vid

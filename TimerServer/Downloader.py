@@ -3,18 +3,28 @@
 import urllib2
 from datetime import datetime
 from BeautifulSoup import BeautifulSoup
-from django.db import connection
 import os
 import re
 from LiveModel import liveModel
 
 ROOT = "/mnt/m3u8live/"
-PORT = "http://127.0.0.1/"
+PORT = "http://127.0.0.1:8000/"
 date = datetime.now().strftime("%Y-%m-%d")
 M3U8PATH = "/mnt/m3u8live/m3u8/"
 M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
 M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
 TSPATH = "/mnt/m3u8live/ts/"
+
+import logging
+
+fh = logging.FileHandler("test.log", "w")
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+fh.setFormatter(formatter)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger('jobs')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 class M3u8LiveDownloader(object):
 
@@ -43,7 +53,7 @@ class M3u8LiveDownloader(object):
 			kkValue = kkValueGroup[len(kkValueGroup)-1].strip("\"")
 			self.m3u8Url = "http://web-play.pptv.com/web-m3u8-"+idValue+".m3u8?type=m3u8.web.pad&playback=0&kk="+kkValue+"&o=v.pptv.com&rcc_id=0"
 		else:
-			print "NOT MATCHED"
+			logger.error("NOT MATCHED")
 			self.m3u8Url = "urlNotExisted"
 		self.name = date+"-Video:NAME_UNKNOWN"
 		vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
@@ -51,7 +61,7 @@ class M3u8LiveDownloader(object):
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):
-		print "Downloader initializing..."
+		logger.debug("Downloader initializing...")
 		if self.m3u8Url == "urlNotExisted":
 			return {"state":False, "downloadSet":self.tsDownloadSet}
 		request = urllib2.Request(self.m3u8Url, headers={
@@ -59,13 +69,13 @@ class M3u8LiveDownloader(object):
 			})
 		m3u8Page = urllib2.urlopen(request)
 		m3u8Content = m3u8Page.read()
-		print "Downloading m3u8 level 1..."
+		logger.debug("Downloading m3u8 level 1...")
 		fp = open(M3U8PATH+date+"-"+str(self.vid)+".m3u", "w")
 		fp.write(m3u8Content)
 		fp.close()
 		m3u8SubPattern = re.compile(r"http://[0-9.:]*/live/[0-9\/]*/[a-zA-Z0-9]*\.m3u8\?playback=[0-9]*&rcc_id=[0-9]*&pre=[a-zA-Z0-9]*&o=[a-z]*\.pptv\.com&type=m3u8\.web\.pad&kk=[a-zA-Z0-9-]*&chid=[0-9]*&k=[a-zA-Z0-9-%_]*")
 		m3u8SubList = m3u8SubPattern.findall(m3u8Content)
-		print str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file..."
+		logger.debug(str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file...")
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w") 
 		resultPointer.write("""#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:284222306\n""")
 		resultPointer.close()
@@ -90,7 +100,7 @@ class M3u8LiveDownloader(object):
 				fp.close()
 				tsPattern = re.compile(r"/live/[a-zA-Z0-9]*/[0-9]*.ts\?pre=ikan&o=[a-z]*.pptv.com&playback=[0-9]*&k=[a-zA-Z0-9-]*&segment=[a-zA-Z0-9_]*&type=m3u8\.web\.pad&chid=[0-9]*&kk=[a-zA-Z0-9-]*&rcc_id=[0-9]*")
 				tsList = tsPattern.findall(m3u8SubContent)
-				print "m3u8 level 2 successfully downloaded, "+str(len(tsList))+" ts files in total"
+				logger.debug("m3u8 level 2 successfully downloaded, "+str(len(tsList))+" ts files in total")
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
@@ -103,7 +113,7 @@ class M3u8LiveDownloader(object):
 						request = urllib2.Request(url, headers={
 							"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 							})
-						print "Downloading "+url
+						logger.debug("Downloading "+url)
 						tsPage = urllib2.urlopen(request)
 						tsContent = tsPage.read()
 						fp = open(TSPATH+date+"-"+str(self.vid)+"-"+tsCode+".ts", "w")
@@ -112,17 +122,15 @@ class M3u8LiveDownloader(object):
 						tsCount += 1
 						self.tsDownloadSet.add(tsCode)
 					else:
-						print str(tsCode) +"alreadyDownloaded, pass it"
+						logger.debug(str(tsCode) +"alreadyDownloaded, pass it")
 					resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-					resultPointer.write("""#EXTINF:5,\n"""+PORT+"read_live_ts"+str(self.vid)+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
+					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+str(self.vid)+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 					resultPointer.close()
 				break
 			except Exception,e:
-				print e
-				print "202 sub m3u9 process error, try another one."
+				logger.error(e)
+				logger.error("202 sub m3u9 process error, try another one.")
 				continue
 		print "Congratulations, download finished, "+str(tsCount)+" downloaded."
 		return {"state":True, "downloadSet":self.tsDownloadSet}
-
-print M3u8LiveDownloader("http://live.pptv.com/list/sports_program/index.html",set([])).runDownloader()
 

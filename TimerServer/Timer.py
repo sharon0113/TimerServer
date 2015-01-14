@@ -1,15 +1,26 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime
 from Downloader import M3u8LiveDownloader
 import urllib2
 from time import sleep
 from daemonize import Daemonize
 import re
+import logging
+
+fh = logging.FileHandler("test.log", "w")
+fh.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+fh.setFormatter(formatter)
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+logger = logging.getLogger('jobs')
+logger.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 PORT = "http://127.0.0.1:8000/"
 ROOT = "/mnt/m3u8/"
 INTERSECTION = 120
 
-startDate = "2015-01-13"
 InfoList = {}
 
 def getLiveList(date):
@@ -19,15 +30,16 @@ def getLiveList(date):
 	try:
 		webpage = urllib2.urlopen(req)
 	except Exception, e:
-		print e
-		print "601 request fail in html page request"
-	pageContent = webpage.read()
+		logger.error(e)
+		logger.error("601 request fail in html page request")
+	pageContent = webpage.read().replace(" ","#")
 	
 	#ORIGINAL URL LIST
-	#href=\"http:\/\/v.pptv.com\/show\/Sv5GxS2TA0GkIoo.html
-	regex = r"http:\\\/\\\/v.pptv\.com\\\/live\\\/[A-Za-z0-9]*\.html"
-	pattern = re.compile(regex)
-	matchGroup = pattern.findall(pageContent)
+	srcPattern = re.compile(r"\"http:\\\/\\\/v\.pptv\.com\\\/show\\\/[a-zA-Z0-9]*\.html\\\"###title=\\\"\\u76f4\\u64ad\\u4e2d")
+	infoList = srcPattern.findall(pageContent)
+	matchGroup = []
+	for info in infoList:
+		matchGroup.append(info.replace("\\","").split("###")[0].strip("\""))
 
 	urlNum = len(matchGroup)
 	urlGroup = []
@@ -36,23 +48,23 @@ def getLiveList(date):
 	return urlGroup
 
 
-def runTimer(startDate):
-	currentDate = startDate
+def runTimer():
+	currentDate = "2015-01-13"
 	while(True):
-		print "run it in "+datetime.now().strftime("%T")
+		logger.debug("run it in "+datetime.now().strftime("%T"))
 		starttime = datetime.now()
 		lastDate = currentDate
 		currentDate = datetime.now().strftime("%Y-%m-%d")
 		currentTime = datetime.now().strftime("%H:%M")
 		#part only newday execute
 		if currentDate != lastDate:
-			print "new day "+ currentDate + " started"
+			logger.debug("new day "+ currentDate + " started")
 		#part every loop to examine
 		liveList = getLiveList(currentDate)
 		if liveList:
-			print str(len(livelist))+" live urls fetched..."
+			logger.debug(str(len(liveList))+" live urls fetched...")
 		else:
-			print "No lives..."
+			logger.debug("No lives...")
 		currentInfolist = {}
 		for liveUrl in liveList:
 			if liveUrl in InfoList.keys():
@@ -66,27 +78,21 @@ def runTimer(startDate):
 		delta = (endtime - starttime).total_seconds()
 		delta = int(delta)
 		if delta < INTERSECTION:
-			print "Server sleeps..."
+			logger.debug("Server sleeps...")
 			remains = INTERSECTION - delta
 			sleep(remains)
 		else:
-			print "WARNING: while loop runs over 2 seconds."
+			logger.debug("WARNING: while loop runs over 2 seconds.")
 
-# if __name__=='__main__':
-# 	pid="timer.pid"
+
+if __name__=='__main__':
+	pid="timer.pid"
 	
-# 	# keep_fds = [fh.stream.fileno()]
-# 	# servermain()
-# 	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=None)
-# 	daemon.start()
-	
-runTimer(startDate)	
-
-
-
-	
-
-
+	keep_fds = [fh.stream.fileno()]
+	# servermain()
+	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	daemon.start()
+	# runTimer()
 
 
 
