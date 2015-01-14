@@ -8,7 +8,7 @@ import re
 from LiveModel import liveModel
 
 ROOT = "/mnt/m3u8live/"
-PORT = "http://121.41.85.39/"
+PORT = "http://121.41.85.39"
 date = datetime.now().strftime("%Y-%m-%d")
 M3U8PATH = "/mnt/m3u8live/m3u8/"
 M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
@@ -54,7 +54,7 @@ class M3u8LiveDownloader(object):
 			kkValue = kkValueGroup[len(kkValueGroup)-1].strip("\"")
 			self.m3u8Url = "http://web-play.pptv.com/web-m3u8-"+idValue+".m3u8?type=m3u8.web.pad&playback=0&kk="+kkValue+"&o=v.pptv.com&rcc_id=0"
 		else:
-			logger.error("NOT MATCHED")
+			logger.debug("NOT MATCHED")
 			self.m3u8Url = "urlNotExisted"
 		self.name = date+"-Video:NAME_UNKNOWN"
 		if vid==None:
@@ -133,6 +133,6 @@ class M3u8LiveDownloader(object):
 				logger.error(e)
 				logger.error("202 sub m3u9 process error, try another one.")
 				continue
-		print "Congratulations, download finished, "+str(tsCount)+" downloaded."
+		logger.debug("Congratulations, download finished, "+str(tsCount)+" downloaded.")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
 

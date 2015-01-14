@@ -1,5 +1,5 @@
 import MySQLdb
-PORT = "http://121.41.85.39/"
+PORT = "http://121.41.85.39"
 
 import logging
 

@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from Downloader import M3u8LiveDownloader
+from LiveModel import liveModel
 import urllib2
 from time import sleep
 from daemonize import Daemonize
@@ -70,7 +71,7 @@ def runTimer():
 			if liveUrl in InfoList.keys():
 				currentInfolist[liveUrl] = InfoList[liveUrl]
 				vid = liveModel().getVidByUrl(liveUrl)
-				currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl]).runDownloader()
+				currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid).runDownloader()
 			else:
 				currentInfolist[liveUrl] = set([])
 				InfoList[liveUrl] = currentInfolist[liveUrl]
@@ -93,11 +94,11 @@ def runTimer():
 if __name__=='__main__':
 	pid="timer.pid"
 	
-	keep_fds = [fh.stream.fileno()]
+	# keep_fds = [fh.stream.fileno()]
 	# servermain()
-	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
-	daemon.start()
-	# runTimer()
+	# daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	# daemon.start()
+	runTimer()
 
 
 
