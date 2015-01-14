@@ -36,3 +36,17 @@ class liveModel(object):
 			logger.error("503 url update error")
 			vid = 0
 		return vid
+
+	def getVidByUrl(self, url):
+		execute_String = "SELECT vid FROM m3u8live WHERE url = %s"
+		try:
+			self.cursor.execute(execute_String, (url, ))
+		except Exception, e:
+			logger.error(e)
+			logger.error("501 inquire vid by url error")
+		info = self.cursor.fetchone()
+		if info:
+			vid = info[0]
+		else:
+			vid = None
+		return vid

@@ -28,9 +28,10 @@ logger.addHandler(fh)
 
 class M3u8LiveDownloader(object):
 
-	def __init__(self, url, downloadSet):
+	def __init__(self, url, downloadSet, vid):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
+		self.vid = vid
 		self.liveUrl = url
 		request = urllib2.Request(self.liveUrl, headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
@@ -56,8 +57,9 @@ class M3u8LiveDownloader(object):
 			logger.error("NOT MATCHED")
 			self.m3u8Url = "urlNotExisted"
 		self.name = date+"-Video:NAME_UNKNOWN"
-		vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
-		self.vid = vid
+		if vid==None:
+			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
+			self.vid = vid
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):
