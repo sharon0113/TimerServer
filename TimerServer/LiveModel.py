@@ -1,5 +1,5 @@
 import MySQLdb
-PORT = "http://127.0.0.1:8000/"
+PORT = "http://121.41.85.39/"
 
 import logging
 
@@ -12,7 +12,7 @@ logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
-connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="", db="resource" )
+connection = MySQLdb.connect(host="121.41.85.39", port=3306, user="root", passwd="chaw5216", db="pptv" )
 
 class liveModel(object):
 
