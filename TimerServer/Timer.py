@@ -73,7 +73,10 @@ def runTimer():
 				currentInfolist[liveUrl] = set([])
 				InfoList[liveUrl] = currentInfolist[liveUrl]
 			currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl]).runDownloader()
-			InfoList[liveUrl] = currentSet
+			if currentSet["state"] = True:
+				InfoList[liveUrl] = currentSet["downloadSet"]
+			else:
+				InfoList[liveUrl] = set([])
 		endtime = datetime.now()
 		delta = (endtime - starttime).total_seconds()
 		delta = int(delta)
