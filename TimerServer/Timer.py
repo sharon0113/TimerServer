@@ -36,11 +36,11 @@ def getLiveList(date):
 	pageContent = webpage.read().replace(" ","#")
 	
 	#ORIGINAL URL LIST
-	srcPattern = re.compile(r"\"http:\\\/\\\/v\.pptv\.com\\\/show\\\/[a-zA-Z0-9]*\.html\\\"###title=\\\"\\u76f4\\u64ad\\u4e2d")
-	infoList = srcPattern.findall(pageContent)
-	matchGroup = []
-	for info in infoList:
-		matchGroup.append(info.replace("\\","").split("###")[0].strip("\""))
+	afcPattern = re.compile(r"\"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9]*\/[a-zA-Z0-9]*\.html)\"###title=\"u76f4u64adu4e2d")
+	afcList = srcPattern.findall(pageContent)
+	crPattern = re.compile(r"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9]*)\/\"###title=\"u76f4u64adu4e2d\"")
+	cbaList = crPattern.findall(pageContent)
+	matchGroup = cbaList + afcList
 
 	urlNum = len(matchGroup)
 	urlGroup = []
