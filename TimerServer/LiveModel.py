@@ -1,6 +1,6 @@
 import MySQLdb
 import logging
-PORT = "http://121.41.85.39"
+PORT = "http://121.41.85.39/"
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)

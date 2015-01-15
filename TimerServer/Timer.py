@@ -18,7 +18,7 @@ logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
-PORT = "http://121.41.85.39"
+PORT = "http://121.41.85.39/"
 ROOT = "/mnt/m3u8/"
 INTERSECTION = 120
 
