@@ -33,13 +33,13 @@ def getLiveList(date):
 	except Exception, e:
 		logger.error(e)
 		logger.error("601 request fail in html page request")
-	pageContent = webpage.read().replace(" ","#")
+	pageContent = webpage.read().replace(" ","#").replace("\\", "")
 	
 	#ORIGINAL URL LIST
 	afcPattern = re.compile(r"\"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9]*\/[a-zA-Z0-9]*\.html)\"###title=\"u76f4u64adu4e2d")
-	afcList = srcPattern.findall(pageContent)
-	crPattern = re.compile(r"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9]*)\/\"###title=\"u76f4u64adu4e2d\"")
-	cbaList = crPattern.findall(pageContent)
+	afcList = afcPattern.findall(pageContent)
+	cbaPattern = re.compile(r"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/live[0-9]*)\/\"###title=\"u76f4u64adu4e2d\"")
+	cbaList = cbaPattern.findall(pageContent)
 	matchGroup = cbaList + afcList
 
 	urlNum = len(matchGroup)
@@ -50,7 +50,7 @@ def getLiveList(date):
 
 
 def runTimer():
-	currentDate = "2015-01-13"
+	currentDate = "2015-01-14"
 	while(True):
 		logger.debug("run it in "+datetime.now().strftime("%T"))
 		starttime = datetime.now()
@@ -62,6 +62,7 @@ def runTimer():
 			logger.debug("new day "+ currentDate + " started")
 		#part every loop to examine
 		liveList = getLiveList(currentDate)
+		logger.debug(liveList)
 		if liveList:
 			logger.debug(str(len(liveList))+" live urls fetched...")
 		else:
@@ -94,11 +95,11 @@ def runTimer():
 if __name__=='__main__':
 	pid="timer.pid"
 	
-	# keep_fds = [fh.stream.fileno()]
+	keep_fds = [fh.stream.fileno()]
 	# servermain()
-	# daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
-	# daemon.start()
-	runTimer()
+	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	daemon.start()
+	# runTimer()
 
 
 

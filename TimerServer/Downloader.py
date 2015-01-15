@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-
+ 
+import logging
 import urllib2
 from datetime import datetime
 from BeautifulSoup import BeautifulSoup
@@ -14,8 +15,6 @@ M3U8PATH = "/mnt/m3u8live/m3u8/"
 M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
 M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
 TSPATH = "/mnt/m3u8live/ts/"
-
-import logging
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)
@@ -124,7 +123,7 @@ class M3u8LiveDownloader(object):
 						tsCount += 1
 						self.tsDownloadSet.add(tsCode)
 					else:
-						logger.debug(str(tsCode) +"alreadyDownloaded, pass it")
+						logger.debug(str(tsCode) +"already downloaded, pass it")
 					resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+str(self.vid)+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 					resultPointer.close()
