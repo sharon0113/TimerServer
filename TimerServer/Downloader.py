@@ -38,6 +38,7 @@ class M3u8LiveDownloader(object):
 		webPage = urllib2.urlopen(request)
 		pageContent = webPage.read()
 		pageContent=pageContent.replace(" ", "").replace("\t", "").replace("\n", "")
+		#http://web-play.pptv.com/web-m3u8-300617.m3u8?type=m3u8.web.pad;playback=0;kk=;o=leader.pptv.com;rcc_id=0
 		regex = r"<scripttype=\"text/javascript\">varwebcfg={.*};</script>"
 		pattern = re.compile(regex)
 		matcher = pattern.search(pageContent)
@@ -53,8 +54,16 @@ class M3u8LiveDownloader(object):
 			kkValue = kkValueGroup[len(kkValueGroup)-1].strip("\"")
 			self.m3u8Url = "http://web-play.pptv.com/web-m3u8-"+idValue+".m3u8?type=m3u8.web.pad&playback=0&kk="+kkValue+"&o=v.pptv.com&rcc_id=0"
 		else:
-			logger.debug("NOT MATCHED")
-			self.m3u8Url = "urlNotExisted"
+			regex = r"videoPlayer\.play\(\'([0-9]*)\'"
+			pattern = re.compile(regex)
+			matcher = pattern.findall(pageContent)
+			if matcher:
+				idValue = matcher[0]
+				self.m3u8Url = "http://web-play.pptv.com/web-m3u8-"+idValue+".m3u8?type=m3u8.web.pad&playback=0&kk=&o=leader.pptv.com&rcc_id=0"
+			else:
+				logger.debug("NOT MATCHED")
+				self.m3u8Url = "urlNotExisted"
+		logger.debug(str(self.m3u8Url)+"downloaded")
 		self.name = date+"-Video:NAME_UNKNOWN"
 		if vid==None:
 			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
