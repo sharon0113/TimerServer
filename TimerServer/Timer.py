@@ -36,7 +36,7 @@ def getLiveList(date):
 	pageContent = webpage.read().replace(" ","#").replace("\\", "")
 	
 	#ORIGINAL URL LIST
-	afcPattern = re.compile(r"\"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9]*\/[a-zA-Z0-9]*\.html)\"###title=\"u76f4u64adu4e2d")
+	afcPattern = re.compile(r"\"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/[a-zA-Z0-9\/]*\.html)\"###title=\"u76f4u64adu4e2d")
 	afcList = afcPattern.findall(pageContent)
 	cbaPattern = re.compile(r"(http:\/\/[a-zA-Z0-9]*\.pptv\.com\/live[0-9]*)\/\"###title=\"u76f4u64adu4e2d\"")
 	cbaList = cbaPattern.findall(pageContent)
