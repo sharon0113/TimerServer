@@ -117,7 +117,7 @@ class M3u8LiveDownloader(object):
 				else:
 					serialCode = "284222306"
 				# resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-				resultPointer.seek(0,2)
+				# resultPointer.seek(0,2)
 				resultPointer.write(serialCode + "\n")
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
@@ -142,7 +142,7 @@ class M3u8LiveDownloader(object):
 					else:
 						logger.debug(str(tsCode) +"already downloaded, pass it")
 					# resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-					resultPointer.seek(0,2)
+					# resultPointer.seek(0,2)
 					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 				break
 			except Exception,e:
