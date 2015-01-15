@@ -87,7 +87,7 @@ class M3u8LiveDownloader(object):
 		m3u8SubList = m3u8SubPattern.findall(m3u8Content)
 		logger.debug(str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file...")
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w") 
-		resultPointer.write("""#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:284222306\n""")
+		resultPointer.write("""#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:""")
 		resultPointer.close()
 		tsCount = 0
 		for m3u8SubUrl in m3u8SubList:
@@ -111,6 +111,15 @@ class M3u8LiveDownloader(object):
 				tsPattern = re.compile(r"/live/[a-zA-Z0-9]*/[0-9]*.ts\?pre=ikan&o=[a-z]*.pptv.com&playback=[0-9]*&k=[a-zA-Z0-9-]*&segment=[a-zA-Z0-9_]*&type=m3u8\.web\.pad&chid=[0-9]*&kk=[a-zA-Z0-9-]*&rcc_id=[0-9]*")
 				tsList = tsPattern.findall(m3u8SubContent)
 				logger.debug("m3u8 level 2 successfully downloaded, "+str(len(tsList))+" ts files in total")
+				resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
+				serialPattern = re.compile(r"#EXT-X-MEDIA-SEQUENCE:([0-9]*)")
+				matcher = serialPattern.findall(m3u8SubContent)
+				if matcher:
+					serialCode = str(matcher[0])
+				else:
+					serialCode = "284222306"
+				resultPointer.write(serialCode + "\n")
+				resultPointer.close()
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
