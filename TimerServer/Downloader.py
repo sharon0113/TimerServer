@@ -134,7 +134,7 @@ class M3u8LiveDownloader(object):
 					else:
 						logger.debug(str(tsCode) +"already downloaded, pass it")
 					resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+str(self.vid)+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
+					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 					resultPointer.close()
 				break
 			except Exception,e:
