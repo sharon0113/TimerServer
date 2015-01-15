@@ -15,7 +15,7 @@ formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 fh.setFormatter(formatter)
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger('jobs')
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
 PORT = "http://121.41.85.39/"
@@ -99,7 +99,7 @@ if __name__=='__main__':
 	# servermain()
 	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
 	daemon.start()
-	# runTimer()
+	#runTimer()
 
 
 

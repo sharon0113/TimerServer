@@ -16,14 +16,14 @@ M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
 M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
 TSPATH = "/mnt/m3u8live/ts/"
 
-fh = logging.FileHandler("test.log", "w")
-fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-fh.setFormatter(formatter)
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
+#fh = logging.FileHandler("test.log", "w")
+#fh.setLevel(logging.DEBUG)
+#formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+#fh.setFormatter(formatter)
+#logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
-logger.addHandler(fh)
+#logger.addHandler(fh)
 
 class M3u8LiveDownloader(object):
 

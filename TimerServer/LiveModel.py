@@ -2,14 +2,8 @@ import MySQLdb
 import logging
 PORT = "http://121.41.85.39/"
 
-fh = logging.FileHandler("test.log", "w")
-fh.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-fh.setFormatter(formatter)
-logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
-logger.addHandler(fh)
 
 class liveModel(object):
 
