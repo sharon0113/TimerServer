@@ -59,6 +59,7 @@ def runTimer():
 		currentTime = datetime.now().strftime("%H:%M")
 		#part only newday execute
 		if currentDate != lastDate:
+			InfoList = {}
 			logger.debug("new day "+ currentDate + " started")
 		#part every loop to examine
 		liveList = getLiveList(currentDate)

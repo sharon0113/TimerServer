@@ -1,5 +1,6 @@
 import MySQLdb
 import logging
+from datetime import datetime
 PORT = "http://121.41.85.39/"
 
 logger = logging.getLogger('jobs')
@@ -31,9 +32,10 @@ class liveModel(object):
 		return vid
 
 	def getVidByUrl(self, url):
-		execute_String = "SELECT vid FROM m3u8live WHERE url = %s"
+		execute_String = "SELECT vid FROM m3u8live WHERE url = %s and `date`= %s"
+		date = datetime.now().strftime("%Y-%m-%d")
 		try:
-			self.cursor.execute(execute_String, (url, ))
+			self.cursor.execute(execute_String, (url, date))
 		except Exception, e:
 			logger.error(e)
 			logger.error("501 inquire vid by url error")
