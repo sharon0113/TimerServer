@@ -80,8 +80,8 @@ class M3u8LiveDownloader(object):
 		m3u8SubPattern = re.compile(r"http://[0-9.:]*/live/[0-9\/]*/[a-zA-Z0-9]*\.m3u8\?playback=[0-9]*&rcc_id=[0-9]*&pre=[a-zA-Z0-9]*&o=[a-z]*\.pptv\.com&type=m3u8\.web\.pad&kk=[a-zA-Z0-9-]*&chid=[0-9]*&k=[a-zA-Z0-9-%_]*")
 		m3u8SubList = m3u8SubPattern.findall(m3u8Content)
 		logger.debug(str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file...")
-		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w") 
-		resultPointer.write("""#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:""")
+		tempPointer = open(M3U8NEWPATH+"temp"+".m3u", "w") 
+		tempPointer.write("""#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:""")
 		tsCount = 0
 		for m3u8SubUrl in m3u8SubList:
 			try:
@@ -110,9 +110,9 @@ class M3u8LiveDownloader(object):
 					serialCode = str(matcher[0])
 				else:
 					serialCode = "284222306"
-				# resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-				# resultPointer.seek(0,2)
-				resultPointer.write(serialCode + "\n")
+				# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
+				# tempPointer.seek(0,2)
+				tempPointer.write(serialCode + "\n")
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
@@ -135,14 +135,20 @@ class M3u8LiveDownloader(object):
 						self.tsDownloadSet.add(tsCode)
 					else:
 						logger.debug(str(tsCode) +"already downloaded, pass it")
-					# resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
-					# resultPointer.seek(0,2)
-					resultPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
+					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
+					# tempPointer.seek(0,2)
+					tempPointer.write("""#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n")
 				break
 			except Exception,e:
 				logger.error(e)
 				logger.error("202 sub m3u9 process error, try another one.")
 				continue
+		tempPointer.close()
+		fp = open(M3U8NEWPATH+"temp"+".m3u", "r")
+		tempContent = fp.read()
+		fp.close()
+		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
+		resultPointer.write(tempContent)
 		resultPointer.close()
 		logger.debug("Congratulations, download finished, "+str(tsCount)+" downloaded.")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
