@@ -1,4 +1,4 @@
-PORT = "http://127.0.0.1:8000"
+PORT = "http://121.41.85.39/"
 ROOT = "/mnt/m3u8/"
 INTERSECTION = 60
 M3U8PATH = "/mnt/m3u8live/m3u8/"
