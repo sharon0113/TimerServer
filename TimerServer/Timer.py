@@ -20,7 +20,7 @@ logger.addHandler(fh)
 
 PORT = "http://121.41.85.39/"
 ROOT = "/mnt/m3u8/"
-INTERSECTION = 30
+INTERSECTION = 60
 
 InfoList = {}
 
@@ -33,6 +33,8 @@ def getLiveList(date):
 	except Exception, e:
 		logger.error(e)
 		logger.error("601 request fail in html page request")
+		return []
+
 	pageContent = webpage.read().replace(" ","#").replace("\\", "")
 	
 	#ORIGINAL URL LIST

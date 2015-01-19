@@ -20,6 +20,7 @@ class liveModel(object):
 		except Exception, e:
 			logger.error(e)
 			logger.error("501 write resource database error")
+			return 0
 		vid = self.cursor.lastrowid
 		try:
 			interface = PORT+"pptvlive/readlivem3u8"+str(vid)+".m3u?vid="+str(vid)
@@ -39,6 +40,7 @@ class liveModel(object):
 		except Exception, e:
 			logger.error(e)
 			logger.error("501 inquire vid by url error")
+			return None
 		info = self.cursor.fetchone()
 		if info:
 			vid = info[0]
