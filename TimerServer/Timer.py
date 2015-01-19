@@ -8,6 +8,7 @@ from time import sleep
 from daemonize import Daemonize
 import re
 import logging
+from utils import PORT, ROOT, INTERSECTION
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)
@@ -17,10 +18,6 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s')
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(fh)
-
-PORT = "http://121.41.85.39/"
-ROOT = "/mnt/m3u8/"
-INTERSECTION = 60
 
 InfoList = {}
 
@@ -106,7 +103,7 @@ if __name__=='__main__':
 	# servermain()
 	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
 	daemon.start()
-	#runTimer()
+	# runTimer()
 
 
 

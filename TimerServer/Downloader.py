@@ -7,14 +7,9 @@ from BeautifulSoup import BeautifulSoup
 import os
 import re
 from LiveModel import liveModel
+from utils import ROOT, PORT, M3U8PATH, M3U8SUBPATH, M3U8NEWPATH, TSPATH 
 
-ROOT = "/mnt/m3u8live/"
-PORT = "http://121.41.85.39/"
 date = datetime.now().strftime("%Y-%m-%d")
-M3U8PATH = "/mnt/m3u8live/m3u8/"
-M3U8SUBPATH = "/mnt/m3u8live/m3u8Sub/"
-M3U8NEWPATH = "/mnt/m3u8live/m3u8New/"
-TSPATH = "/mnt/m3u8live/ts/"
 
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
@@ -58,10 +53,10 @@ class M3u8LiveDownloader(object):
 				logger.debug("NOT MATCHED")
 				self.m3u8Url = "urlNotExisted"
 		logger.debug(str(self.m3u8Url)+"downloaded")
+		self.name = u"Live Channel"
 		if vid==None:
 			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
 			self.vid = vid
-		self.name = u"Live Channel"+str(vid)
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):
