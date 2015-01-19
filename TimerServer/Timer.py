@@ -84,6 +84,10 @@ def runTimer():
 				InfoList[liveUrl] = currentSet["downloadSet"]
 			else:
 				InfoList[liveUrl] = set([])
+		for lastUrl in InfoList.keys():
+			if lastUrl not in liveList:
+				logger.debug("1 live has finished just now")
+				liveModel().updateStateByUrl(liveUrl)
 		endtime = datetime.now()
 		delta = (endtime - starttime).total_seconds()
 		delta = int(delta)

@@ -47,3 +47,13 @@ class liveModel(object):
 		else:
 			vid = None
 		return vid
+
+	def updateStateByUrl(self, url):
+		execute_String = "UPDATE m3u8live SET  state = %s WHERE url = %s and `date`= %s"
+		try:
+			self.cursor.execute(execute_String, ("finish", url, date))
+		except Exception, e:
+			logger.error(e)
+			logger.error("504 state update error")
+			return "live"
+		return "finish"

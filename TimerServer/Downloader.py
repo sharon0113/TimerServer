@@ -58,10 +58,10 @@ class M3u8LiveDownloader(object):
 				logger.debug("NOT MATCHED")
 				self.m3u8Url = "urlNotExisted"
 		logger.debug(str(self.m3u8Url)+"downloaded")
-		self.name = date+"-Video:NAME_UNKNOWN"
 		if vid==None:
 			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
 			self.vid = vid
+		self.name = u"Live Channel"+str(vid)
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):
