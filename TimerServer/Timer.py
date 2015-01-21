@@ -51,6 +51,9 @@ def getLiveList(date):
 def runTimer():
 	currentDate = "2015-01-14"
 	while(True):
+		logger.debug("###########DEBUG###########")
+		logger.debug("one timer loop start at:  ", datetime.now().strftime("%T"))
+		logger.debug("###########DEBUG###########")
 		logger.debug("run it in "+datetime.now().strftime("%T"))
 		starttime = datetime.now()
 		lastDate = currentDate
@@ -68,39 +71,53 @@ def runTimer():
 		else:
 			logger.debug("No lives...")
 		currentInfolist = {}
-		for liveUrl in liveList:
-			if liveUrl in InfoList.keys():
-				currentInfolist[liveUrl] = InfoList[liveUrl]
-				vid = liveModel().getVidByUrl(liveUrl)
-				currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid).runDownloader()
-			else:
-				currentInfolist[liveUrl] = set([])
-				InfoList[liveUrl] = currentInfolist[liveUrl]
-				currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], None).runDownloader()
-			if currentSet["state"] == True:
-				InfoList[liveUrl] = currentSet["downloadSet"]
-			else:
-				InfoList[liveUrl] = set([])
 		for lastUrl in InfoList.keys():
 			if lastUrl not in liveList:
 				logger.debug("1 live has finished just now")
 				liveModel().updateStateByUrl(liveUrl)
+		downloadLoopCount = 0
+		while(True):
+			logger.debug("###########DEBUG###########")
+			downloadLoopCount += 1
+			littleStarttime = datetime.now()
+			for liveUrl in liveList:
+				if liveUrl in InfoList.keys():
+					currentInfolist[liveUrl] = InfoList[liveUrl]
+					vid = liveModel().getVidByUrl(liveUrl)
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid).runDownloader()
+				else:
+					currentInfolist[liveUrl] = set([])
+					InfoList[liveUrl] = currentInfolist[liveUrl]
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], None).runDownloader()
+				if currentSet["state"] == True:
+					InfoList[liveUrl] = currentSet["downloadSet"]
+				else:
+					InfoList[liveUrl] = set([])
+			littleEndtime = datetime.now()
+			delta = (littleEndtime - littleStarttime).total_seconds()
+			if downloadLoopCount >= 5:
+				break
+			if delta < DOWNLOADINTERVAL:
+				logger.debug("Server sleeps in download loop...")
+				remains = DOWNLOADINTERVAL - delta
+				sleep(remains)
+			else:
+				logger.debug("WARNING: while loop runs over ",UPDATEINTERVAL," seconds.")
 		endtime = datetime.now()
 		delta = (endtime - starttime).total_seconds()
 		delta = int(delta)
-		if delta < INTERSECTION:
-			logger.debug("Server sleeps...")
-			remains = INTERSECTION - delta
+		if delta < UPDATEINTERVAL:
+			logger.debug("Server sleeps in update loop...")
+			remains = UPDATEINTERVAL - delta
 			sleep(remains)
 		else:
-			logger.debug("WARNING: while loop runs over 2 seconds.")
-
+			logger.debug("WARNING: while loop runs over ",UPDATEINTERVAL," seconds.")
 
 if __name__=='__main__':
 	pid="timer.pid"
 	
 	keep_fds = [fh.stream.fileno()]
-	# servermain()
+	servermain()
 	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
 	daemon.start()
 	# runTimer()
