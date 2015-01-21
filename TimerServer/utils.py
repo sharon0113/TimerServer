@@ -1,5 +1,5 @@
-#PORT = "http://121.41.85.39/"
-PORT = "http://127.0.0.1:8000/"
+PORT = "http://121.41.85.39/"
+#PORT = "http://127.0.0.1:8000/"
 ROOT = "/mnt/m3u8/"
 DOWNLOADINTERVAL = 3
 UPDATEINTERVAL = 30
