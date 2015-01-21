@@ -25,10 +25,10 @@ def urlDownloader(url, tsCode, vid):
 		})
 	logger.debug("Downloading "+url)
 	logger.debug("###########DEBUG###########")
-	logger.debug("downloading start at: ", datetime.now().strftime("%T"))
+	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"start at: "+datetime.now().strftime("%T"))
 	tsPage = urllib2.urlopen(request)
 	tsContent = tsPage.read()
-	logger.debug("downloading end at: ", datetime.now().strftime("%T"))
+	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"end at: "+datetime.now().strftime("%T"))
 	logger.debug("###########DEBUG###########")
 	fp = open(TSPATH+date+"-"+vid+"-"+tsCode+".ts", "w")
 	fp.write(tsContent)
@@ -151,13 +151,13 @@ class M3u8LiveDownloader(object):
 				logger.error("202 sub m3u9 process error, try another one.")
 				continue
 		logger.debug("###########DEBUG###########")		
-		logger.debug("rewrite video  ",vid,"  at: ", datetime.now().strftime("%T"))
+		logger.debug("rewrite video  "+str(vid)+"  at: "+datetime.now().strftime("%T"))
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
 		resultPointer.write(tempContent)
 		resultPointer.close()
-		logger.debug("end rewrite video  ",vid,"  at: ", datetime.now().strftime("%T"))
+		logger.debug("end rewrite video  "+str(vid)+"  at: "+datetime.now().strftime("%T"))
 		debug.logger("##########MULTITHREAD#########")
-		debug.logger("start multithread at: ", datetime.now().strftime("%T"))
+		debug.logger("start multithread at: "+datetime.now().strftime("%T"))
 		for urlInfo in unDownloadedSet:
 			url = urlInfo["url"]
 			vid = urlInfo["vid"]
@@ -169,7 +169,7 @@ class M3u8LiveDownloader(object):
 			thread.start()
 		for thread in threadPool:
 			thread.join()
-		debug.logger("end multithread at: ", datetime.now().strftime("%T"))
+		debug.logger("end multithread at: "+datetime.now().strftime("%T"))
 		debug.logger("##########MULTITHREAD#########")
 		logger.debug("Congratulations, download finished")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
