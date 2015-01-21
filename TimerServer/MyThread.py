@@ -3,7 +3,7 @@ from time import ctime, sleep
 
 class MyThread(threading.Thread):
 	def __init__(self, func, args, name):
-		super(myThread, self).__init__()
+		super(MyThread, self).__init__()
 		self.name = name
 		self.args = args
 		self.func = func

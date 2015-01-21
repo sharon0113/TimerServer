@@ -45,6 +45,7 @@ def getLiveList(date):
 	urlGroup = []
 	for index in range(0, urlNum):
 		urlGroup.append(matchGroup[index].replace("\\", ""))
+	urlGroup.append("http://v.pptv.com/show/OuBHxS2TA0GkIoo.html")
 	return urlGroup
 
 
@@ -124,11 +125,11 @@ def runTimer():
 if __name__=='__main__':
 	pid="timer.pid"
 	
-	keep_fds = [fh.stream.fileno()]
-	# servermain()
-	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
-	daemon.start()
-	# runTimer()
+	# keep_fds = [fh.stream.fileno()]
+	# # servermain()
+	# daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	# daemon.start()
+	runTimer()
 
 
 

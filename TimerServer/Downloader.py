@@ -8,16 +8,19 @@ import os
 import re
 from LiveModel import liveModel
 from utils import ROOT, PORT, M3U8PATH, M3U8SUBPATH, M3U8NEWPATH, TSPATH
-from time import ctime
-import threading
-from MyThread import MyThread
-from Queue import Queue
 
 
 date = datetime.now().strftime("%Y-%m-%d")
 
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
+
+# def urlDownloader(url, tsCode, vid):
+# 	trialCount = 0
+# 	state = False
+# 	while state==False and trialCount <5:
+# 		state = downloadByUrl(url, tsCode, vid)
+# 	return state
 
 def urlDownloader(url, tsCode, vid):
 	request = urllib2.Request(url, headers={
@@ -26,11 +29,16 @@ def urlDownloader(url, tsCode, vid):
 	logger.debug("Downloading "+url)
 	logger.debug("###########DEBUG###########")
 	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"start at: "+datetime.now().strftime("%T"))
-	tsPage = urllib2.urlopen(request)
-	tsContent = tsPage.read()
-	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"end at: "+datetime.now().strftime("%T"))
+	try:
+		tsPage = urllib2.urlopen(request)
+		tsContent = tsPage.read()
+	except Exception, e:
+		logger.debug(e)
+		logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode))
+		return False
+	logger.debug("end video"+str(vid)+"-"+str(tsCode)+"at: "+datetime.now().strftime("%T")+", successful")
 	logger.debug("###########DEBUG###########")
-	fp = open(TSPATH+date+"-"+vid+"-"+tsCode+".ts", "w")
+	fp = open(TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts", "w")
 	fp.write(tsContent)
 	fp.close()
 	return True
@@ -128,7 +136,9 @@ class M3u8LiveDownloader(object):
 				# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 				# tempPointer.seek(0,2)
 				tempContent = tempContent + str(serialCode) + "\n"
-				unDownloadedSet = set([])
+				threadPool = []
+				# logger.debug("##########MULTITHREAD#########")
+				logger.debug("start multithread at: "+datetime.now().strftime("%T"))
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
@@ -138,13 +148,23 @@ class M3u8LiveDownloader(object):
 					else:
 						tsCode = "00000X"
 					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
-						unDownloadedSet.add({"url":url,"tsCode":tsCode, "vid":self.vid})
+						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
+						# threadPool.append(currentThread)
+						urlDownloader(url, tsCode, self.vid)
 						self.tsDownloadSet.add(tsCode)
 					else:
 						logger.debug(str(tsCode) +"already downloaded, pass it")
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
 					tempContent = tempContent + """#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
+				# for thread in threadPool:
+				# 	thread.start()
+				# logger.debug(str(threading.activeCount())+"has been initialized...")
+				# for thread in threadPool:
+				# 	thread.join()
+				# 	logger.debug("one thread finished, "+str(threading.activeCount())+" remaining...")
+				logger.debug("end multithread at: "+datetime.now().strftime("%T"))
+				# logger.debug("##########MULTITHREAD#########")
 				break
 			except Exception,e:
 				logger.error(e)
@@ -156,21 +176,6 @@ class M3u8LiveDownloader(object):
 		resultPointer.write(tempContent)
 		resultPointer.close()
 		logger.debug("end rewrite video  "+str(vid)+"  at: "+datetime.now().strftime("%T"))
-		debug.logger("##########MULTITHREAD#########")
-		debug.logger("start multithread at: "+datetime.now().strftime("%T"))
-		for urlInfo in unDownloadedSet:
-			url = urlInfo["url"]
-			vid = urlInfo["vid"]
-			tsCode = uriInfo["tsCode"]
-			threadPool = []
-			currentThread = myThread(urlDownloader, (url, tsCode, vid), str(vid))
-			threadPool.append(currentThread)
-		for thread in threadPool:
-			thread.start()
-		for thread in threadPool:
-			thread.join()
-		debug.logger("end multithread at: "+datetime.now().strftime("%T"))
-		debug.logger("##########MULTITHREAD#########")
 		logger.debug("Congratulations, download finished")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
 
