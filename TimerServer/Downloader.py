@@ -34,14 +34,8 @@ def urlDownloader(url, tsCode, vid):
 		tsContent = tsPage.read()
 	except Exception, e:
 		logger.debug(e)
-		logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode)+"over timeout")
-		try:
-			logger.debug(e)
-			logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode)+"over timeout")
-		except Exception, e:
-			logger.debug(e)
-			logger.debug("205 "+str(vid)+"-"+str(tsCode)+"failed")
-			return False
+		logger.debug("205 "+str(vid)+"-"+str(tsCode)+"failed")
+		return False
 	logger.debug("end video"+str(vid)+"-"+str(tsCode)+"at: "+datetime.now().strftime("%T")+", successful")
 	logger.debug("###########DEBUG###########")
 	fp = open(TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts", "w")
