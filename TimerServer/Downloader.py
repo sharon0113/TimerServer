@@ -155,19 +155,16 @@ class M3u8LiveDownloader(object):
 						tsCode = matcher.group().replace(".ts", "")
 					else:
 						tsCode = "00000X"
-					if urlCount <= 360:
-						pass
+					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
+						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
+						# threadPool.append(currentThread)
+						urlDownloader(url, tsCode, self.vid)
+						self.tsDownloadSet.add(tsCode)
 					else:
-						if tsCode not in self.tsDownloadSet and tsCode != "00000X":
-							# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
-							# threadPool.append(currentThread)
-							urlDownloader(url, tsCode, self.vid)
-							self.tsDownloadSet.add(tsCode)
-						else:
-							logger.debug(str(tsCode) +"already downloaded, pass it")
+						logger.debug(str(tsCode) +"already downloaded, pass it")
+					tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
-					tempContent = tempContent + """#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 				# for thread in threadPool:
 				# 	thread.start()
 				# logger.debug(str(threading.activeCount())+"has been initialized...")
