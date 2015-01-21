@@ -161,7 +161,7 @@ class M3u8LiveDownloader(object):
 						urlDownloader(url, tsCode, self.vid)
 						self.tsDownloadSet.add(tsCode)
 					else:
-						logger.debug(str(tsCode) +"already downloaded, pass it")
+						# logger.debug(str(tsCode) +"already downloaded, pass it")
 					tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
