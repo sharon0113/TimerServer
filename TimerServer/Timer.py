@@ -122,7 +122,7 @@ def runTimer():
 			logger.debug("WARNING: while loop runs over ",UPDATEINTERVAL," seconds.")
 
 if __name__=='__main__':
-	# pid="timer.pid"
+	pid="timer.pid"
 	
 	keep_fds = [fh.stream.fileno()]
 	#servermain()
