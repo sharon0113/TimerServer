@@ -152,11 +152,12 @@ class M3u8LiveDownloader(object):
 					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
 						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
 						# threadPool.append(currentThread)
-						urlDownloader(url, tsCode, self.vid)
+						state = urlDownloader(url, tsCode, self.vid)
 						self.tsDownloadSet.add(tsCode)
 					else:
 						# logger.debug(str(tsCode) +"already downloaded, pass it")
-					tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
+					if state:
+						tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
 				# for thread in threadPool:
