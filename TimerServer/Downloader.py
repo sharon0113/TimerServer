@@ -7,12 +7,33 @@ from BeautifulSoup import BeautifulSoup
 import os
 import re
 from LiveModel import liveModel
-from utils import ROOT, PORT, M3U8PATH, M3U8SUBPATH, M3U8NEWPATH, TSPATH 
+from utils import ROOT, PORT, M3U8PATH, M3U8SUBPATH, M3U8NEWPATH, TSPATH
+from time import ctime
+import threading
+from MyThread import MyThread
+from Queue import Queue
+
 
 date = datetime.now().strftime("%Y-%m-%d")
 
 logger = logging.getLogger('jobs')
 logger.setLevel(logging.DEBUG)
+
+def urlDownloader(url, tsCode, vid):
+	request = urllib2.Request(url, headers={
+		"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
+		})
+	logger.debug("Downloading "+url)
+	logger.debug("###########DEBUG###########")
+	logger.debug("downloading start at: ", datetime.now().strftime("%T"))
+	tsPage = urllib2.urlopen(request)
+	tsContent = tsPage.read()
+	logger.debug("downloading end at: ", datetime.now().strftime("%T"))
+	logger.debug("###########DEBUG###########")
+	fp = open(TSPATH+date+"-"+vid+"-"+tsCode+".ts", "w")
+	fp.write(tsContent)
+	fp.close()
+	return True
 
 class M3u8LiveDownloader(object):
 
@@ -107,6 +128,7 @@ class M3u8LiveDownloader(object):
 				# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 				# tempPointer.seek(0,2)
 				tempContent = tempContent + str(serialCode) + "\n"
+				unDownloadedSet = set([])
 				for tsUrl in tsList:
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
@@ -115,17 +137,8 @@ class M3u8LiveDownloader(object):
 						tsCode = matcher.group().replace(".ts", "")
 					else:
 						tsCode = "00000X"
-					if tsCode not in self.tsDownloadSet:
-						request = urllib2.Request(url, headers={
-							"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
-							})
-						logger.debug("Downloading "+url)
-						tsPage = urllib2.urlopen(request)
-						tsContent = tsPage.read()
-						fp = open(TSPATH+date+"-"+str(self.vid)+"-"+tsCode+".ts", "w")
-						fp.write(tsContent)
-						fp.close()
-						tsCount += 1
+					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
+						unDownloadedSet.add({"url":url,"tsCode":tsCode, "vid":self.vid})
 						self.tsDownloadSet.add(tsCode)
 					else:
 						logger.debug(str(tsCode) +"already downloaded, pass it")
@@ -137,9 +150,27 @@ class M3u8LiveDownloader(object):
 				logger.error(e)
 				logger.error("202 sub m3u9 process error, try another one.")
 				continue
+		logger.debug("###########DEBUG###########")		
+		logger.debug("rewrite video  ",vid,"  at: ", datetime.now().strftime("%T"))
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
 		resultPointer.write(tempContent)
 		resultPointer.close()
-		logger.debug("Congratulations, download finished, "+str(tsCount)+" downloaded.")
+		logger.debug("end rewrite video  ",vid,"  at: ", datetime.now().strftime("%T"))
+		debug.logger("##########MULTITHREAD#########")
+		debug.logger("start multithread at: ", datetime.now().strftime("%T"))
+		for urlInfo in unDownloadedSet:
+			url = urlInfo["url"]
+			vid = urlInfo["vid"]
+			tsCode = uriInfo["tsCode"]
+			threadPool = []
+			currentThread = myThread(urlDownloader, (url, tsCode, vid), str(vid))
+			threadPool.append(currentThread)
+		for thread in threadPool:
+			thread.start()
+		for thread in threadPool:
+			thread.join()
+		debug.logger("end multithread at: ", datetime.now().strftime("%T"))
+		debug.logger("##########MULTITHREAD#########")
+		logger.debug("Congratulations, download finished")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
 
