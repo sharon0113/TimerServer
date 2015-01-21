@@ -8,7 +8,7 @@ from time import sleep
 from daemonize import Daemonize
 import re
 import logging
-from utils import PORT, ROOT, DOWNLOADINTERVAL, UPDATEINTERVAL
+from utils import PORT, ROOT, DOWNLOADINTERVAL, UPDATEINTERVAL, FREQUENCY
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)
@@ -52,7 +52,7 @@ def runTimer():
 	currentDate = "2015-01-14"
 	while(True):
 		logger.debug("###########DEBUG###########")
-		logger.debug("one timer loop start at:  ", datetime.now().strftime("%T"))
+		logger.debug("one timer loop start at:  "+datetime.now().strftime("%T"))
 		logger.debug("###########DEBUG###########")
 		logger.debug("run it in "+datetime.now().strftime("%T"))
 		starttime = datetime.now()
@@ -78,6 +78,8 @@ def runTimer():
 		downloadLoopCount = 0
 		while(True):
 			logger.debug("###########DEBUG###########")
+			logger.debug("one download loop start at:  "+datetime.now().strftime("%T"))
+			logger.debug("###########DEBUG###########")
 			downloadLoopCount += 1
 			littleStarttime = datetime.now()
 			for liveUrl in liveList:
@@ -95,6 +97,9 @@ def runTimer():
 					InfoList[liveUrl] = set([])
 			littleEndtime = datetime.now()
 			delta = (littleEndtime - littleStarttime).total_seconds()
+			logger.debug("###########DEBUG###########")
+			logger.debug("one download loop end at:  "+ datetime.now().strftime("%T"))
+			logger.debug("###########DEBUG###########")
 			if downloadLoopCount >= FREQUENCY:
 				break
 			if delta < DOWNLOADINTERVAL:
@@ -106,6 +111,9 @@ def runTimer():
 		endtime = datetime.now()
 		delta = (endtime - starttime).total_seconds()
 		delta = int(delta)
+		logger.debug("###########DEBUG###########")
+		logger.debug("one timer loop end at:  "+datetime.now().strftime("%T"))
+		logger.debug("###########DEBUG###########")
 		if delta < UPDATEINTERVAL:
 			logger.debug("Server sleeps in update loop...")
 			remains = UPDATEINTERVAL - delta
@@ -114,7 +122,7 @@ def runTimer():
 			logger.debug("WARNING: while loop runs over ",UPDATEINTERVAL," seconds.")
 
 if __name__=='__main__':
-	pid="timer.pid"
+	# pid="timer.pid"
 	
 	keep_fds = [fh.stream.fileno()]
 	#servermain()
