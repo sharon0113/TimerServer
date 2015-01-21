@@ -8,7 +8,7 @@ from time import sleep
 from daemonize import Daemonize
 import re
 import logging
-from utils import PORT, ROOT, INTERSECTION
+from utils import PORT, ROOT, DOWNLOADINTERVAL, UPDATEINTERVAL
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)
@@ -117,7 +117,7 @@ if __name__=='__main__':
 	pid="timer.pid"
 	
 	keep_fds = [fh.stream.fileno()]
-	servermain()
+	#servermain()
 	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
 	daemon.start()
 	# runTimer()
