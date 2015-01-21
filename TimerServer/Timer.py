@@ -95,7 +95,7 @@ def runTimer():
 					InfoList[liveUrl] = set([])
 			littleEndtime = datetime.now()
 			delta = (littleEndtime - littleStarttime).total_seconds()
-			if downloadLoopCount >= 5:
+			if downloadLoopCount >= FREQUENCY:
 				break
 			if delta < DOWNLOADINTERVAL:
 				logger.debug("Server sleeps in download loop...")
