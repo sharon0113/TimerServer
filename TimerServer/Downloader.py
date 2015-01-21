@@ -30,12 +30,18 @@ def urlDownloader(url, tsCode, vid):
 	logger.debug("###########DEBUG###########")
 	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"start at: "+datetime.now().strftime("%T"))
 	try:
-		tsPage = urllib2.urlopen(request)
+		tsPage = urllib2.urlopen(request, timeout=2)
 		tsContent = tsPage.read()
 	except Exception, e:
 		logger.debug(e)
-		logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode))
-		return False
+		logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode)+"over timeout")
+		try:
+			logger.debug(e)
+			logger.debug("204 url request fail for"+str(vid)+"-"+str(tsCode)+"over timeout")
+		except Exception, e:
+			logger.debug(e)
+			logger.debug("205 "+str(vid)+"-"+str(tsCode)+"failed")
+			return False
 	logger.debug("end video"+str(vid)+"-"+str(tsCode)+"at: "+datetime.now().strftime("%T")+", successful")
 	logger.debug("###########DEBUG###########")
 	fp = open(TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts", "w")
@@ -139,7 +145,9 @@ class M3u8LiveDownloader(object):
 				threadPool = []
 				# logger.debug("##########MULTITHREAD#########")
 				logger.debug("start multithread at: "+datetime.now().strftime("%T"))
+				urlCount = 0
 				for tsUrl in tsList:
+					urlCount += 1
 					url = "http://"+ ipAddress+ tsUrl
 					codePattern = re.compile(r"[0-9]*\.ts")
 					matcher = codePattern.search(tsUrl)
@@ -147,13 +155,16 @@ class M3u8LiveDownloader(object):
 						tsCode = matcher.group().replace(".ts", "")
 					else:
 						tsCode = "00000X"
-					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
-						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
-						# threadPool.append(currentThread)
-						urlDownloader(url, tsCode, self.vid)
-						self.tsDownloadSet.add(tsCode)
+					if urlCount <= 360:
+						pass
 					else:
-						logger.debug(str(tsCode) +"already downloaded, pass it")
+						if tsCode not in self.tsDownloadSet and tsCode != "00000X":
+							# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
+							# threadPool.append(currentThread)
+							urlDownloader(url, tsCode, self.vid)
+							self.tsDownloadSet.add(tsCode)
+						else:
+							logger.debug(str(tsCode) +"already downloaded, pass it")
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
 					tempContent = tempContent + """#EXTINF:5,\n"""+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
