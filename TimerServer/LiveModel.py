@@ -10,8 +10,8 @@ class liveModel(object):
 
 	def __init__(self):
 		super(liveModel, self).__init__()
-		connection = MySQLdb.connect(host="121.41.85.39", port=3306, user="root", passwd="chaw5216", db="pptv" )
-		#connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="", db="resource" )
+		#connection = MySQLdb.connect(host="121.41.85.39", port=3306, user="root", passwd="chaw5216", db="pptv" )
+		connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="", db="resource" )
 		self.cursor = connection.cursor()
 
 	def addLiveItem(self, name, date, url, state="live"):

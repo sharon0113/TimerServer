@@ -171,11 +171,11 @@ class M3u8LiveDownloader(object):
 				logger.error("202 sub m3u9 process error, try another one.")
 				continue
 		logger.debug("###########DEBUG###########")		
-		logger.debug("rewrite video  "+str(vid)+"  at: "+datetime.now().strftime("%T"))
+		logger.debug("rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
 		resultPointer.write(tempContent)
 		resultPointer.close()
-		logger.debug("end rewrite video  "+str(vid)+"  at: "+datetime.now().strftime("%T"))
+		logger.debug("end rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		logger.debug("Congratulations, download finished")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
 
