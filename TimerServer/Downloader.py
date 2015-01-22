@@ -57,13 +57,10 @@ def urlDownloader(url, tsCode, vid):
 
 class M3u8LiveDownloader(object):
 
-	def __init__(self, url, downloadSet, vid):
+	def __init__(self, url, downloadSet, vid, isFirst):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
-		if vid==None:
-			self.isFirstTime = True
-		else:
-			self.isFirstTime = False
+		self.isFirstTime = isFirst
 		self.vid = vid
 		self.liveUrl = url
 		request = urllib2.Request(self.liveUrl, headers={
@@ -106,9 +103,6 @@ class M3u8LiveDownloader(object):
 				self.m3u8Url = "urlNotExisted"
 		logger.debug(str(self.m3u8Url)+"downloaded")
 		self.name = u"Live Channel"
-		if vid==None:
-			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
-			self.vid = vid
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):

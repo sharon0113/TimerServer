@@ -85,11 +85,13 @@ def runTimer():
 				if liveUrl in InfoList.keys():
 					currentInfolist[liveUrl] = InfoList[liveUrl]
 					vid = liveModel().getVidByUrl(liveUrl)
-					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid).runDownloader()
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid, False).runDownloader()
 				else:
 					currentInfolist[liveUrl] = set([])
 					InfoList[liveUrl] = currentInfolist[liveUrl]
-					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], None).runDownloader()
+					date = datetime.now().strftime("%Y-%m-%d")
+					vid = liveModel().addLiveItem("VideoName", date, liveUrl)
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid, True).runDownloader()
 				if currentSet["state"] == True:
 					InfoList[liveUrl] = currentSet["downloadSet"]
 				else:
