@@ -48,7 +48,7 @@ class M3u8LiveDownloader(object):
 	def __init__(self, url, downloadSet, vid):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
-		if vid=None:
+		if vid==None:
 			self.isFirstTime = True
 		else:
 			self.isFirstTime = False
@@ -107,10 +107,11 @@ class M3u8LiveDownloader(object):
 		fp.close()
 		m3u8SubPattern = re.compile(r"http://[0-9.:]*/live/[0-9\/]*/[a-zA-Z0-9]*\.m3u8\?playback=[0-9]*&rcc_id=[0-9]*&pre=[a-zA-Z0-9]*&o=[a-z]*\.pptv\.com&type=m3u8\.web\.pad&kk=[a-zA-Z0-9-]*&chid=[0-9]*&k=[a-zA-Z0-9-%_]*")
 		m3u8SubList = m3u8SubPattern.findall(m3u8Content)
-		logger.debug(str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file...")
+		#logger.debug(str(len(m3u8SubList)) + " m3u8 urls successfully fetched, start downloading first m3u8 level 2 file...")
 		tempContent = """#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXT-X-VERSION:3\n#EXT-X-MEDIA-SEQUENCE:"""
 		tsCount = 0
-		for m3u8SubUrl in m3u8SubList:
+		if m3u8SubList:
+			m3u8SubUrl = m3u8SubList[0]
 			try:
 				portPattern = re.compile(r"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*:[0-9]*")
 				matcher = portPattern.search(m3u8SubUrl)
@@ -158,6 +159,7 @@ class M3u8LiveDownloader(object):
 							state = urlDownloader(url, tsCode, self.vid)
 							self.tsDownloadSet.add(tsCode)
 						else:
+							self.tsDownloadSet.add(tsCode)
 							state = True
 					else:
 						if tsCode not in self.tsDownloadSet and tsCode != "00000X":
@@ -174,11 +176,12 @@ class M3u8LiveDownloader(object):
 					# tempPointer.seek(0,2)
 				logger.debug("end multithread at: "+datetime.now().strftime("%T"))
 				# logger.debug("##########MULTITHREAD#########")
-				break
 			except Exception,e:
 				logger.error(e)
 				logger.error("202 sub m3u9 process error, try another one.")
-				continue
+				return {"state":False, "downloadSet":self.tsDownloadSet}
+		else:
+			return {"state":False, "downloadSet":self.tsDownloadSet}
 		logger.debug("###########DEBUG###########")		
 		logger.debug("rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
