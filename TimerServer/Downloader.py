@@ -181,9 +181,8 @@ class M3u8LiveDownloader(object):
 							self.tsDownloadSet.add(tsCode)
 						else:
 							state = True
-							# logger.debug(str(tsCode) +"already downloaded, pass it")
-					if state:
-						tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
+						# logger.debug(str(tsCode) +"already downloaded, pass it")
+					tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
 				logger.debug("end multithread at: "+datetime.now().strftime("%T"))
@@ -196,9 +195,6 @@ class M3u8LiveDownloader(object):
 			return {"state":False, "downloadSet":self.tsDownloadSet}
 		logger.debug("###########DEBUG###########")		
 		logger.debug("rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
-		'''resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
-		resultPointer.write(tempContent)
-		resultPointer.close()'''
 		logger.debug("end rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		logger.debug("Congratulations, download finished")
 		logger.debug("###########DEBUG###########")
