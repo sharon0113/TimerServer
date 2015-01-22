@@ -93,7 +93,7 @@ def runTimer():
 				if currentSet["state"] == True:
 					InfoList[liveUrl] = currentSet["downloadSet"]
 				else:
-					InfoList[liveUrl] = set([])
+					InfoList[liveUrl] = currentSet["downloadSet"]
 			logger.debug("###########DEBUG###########")
 			logger.debug("one download loop end at:  "+ datetime.now().strftime("%T"))
 			logger.debug("###########DEBUG###########")
