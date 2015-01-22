@@ -101,6 +101,7 @@ def runTimer():
 			logger.debug("###########DEBUG###########")
 			if downloadLoopCount >= FREQUENCY:
 				break
+			sleep(5)
 		logger.debug("###########DEBUG###########")
 		logger.debug("one timer loop end at:  "+datetime.now().strftime("%T"))
 		logger.debug("###########DEBUG###########")

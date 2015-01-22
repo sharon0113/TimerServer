@@ -185,27 +185,14 @@ class M3u8LiveDownloader(object):
 						tsCode = matcher.group().replace(".ts", "")
 					else:
 						tsCode = "00000X"
-					if self.isFirstTime:
-						if urlCount > 360:
-							state = urlDownloader(url, tsCode, self.vid)
-							self.tsDownloadSet.add(tsCode)
-						else:
-							self.tsDownloadSet.add(tsCode)
-							state = True
-					else:
-						if tsCode not in self.tsDownloadSet and tsCode != "00000X":
-							# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
-							# threadPool.append(currentThread)
-							state = urlDownloader(url, tsCode, self.vid)
-							self.tsDownloadSet.add(tsCode)
-						else:
-							state = False
-							# logger.debug(str(tsCode) +"already downloaded, pass it")
-					if state:
-						tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
+					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
+						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
+						# threadPool.append(currentThread)
+						urlDownloader(url, tsCode, self.vid)
+						self.tsDownloadSet.add(tsCode)
+					# logger.debug(str(tsCode) +"already downloaded, pass it")
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
-				logger.debug("end multithread at: "+datetime.now().strftime("%T"))
 				# logger.debug("##########MULTITHREAD#########")
 			except Exception,e:
 				logger.error(e)
@@ -215,9 +202,6 @@ class M3u8LiveDownloader(object):
 			return {"state":False, "downloadSet":self.tsDownloadSet}
 		logger.debug("###########DEBUG###########")		
 		logger.debug("rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
-		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
-		resultPointer.write(tempContent)
-		resultPointer.close()
 		logger.debug("end rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		logger.debug("Congratulations, download finished")
 		logger.debug("###########DEBUG###########")
