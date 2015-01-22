@@ -34,8 +34,20 @@ def urlDownloader(url, tsCode, vid):
 		tsContent = tsPage.read()
 	except Exception, e:
 		logger.debug(e)
-		logger.debug("205 "+str(vid)+"-"+str(tsCode)+"failed")
-		return False
+		logger.debug("205 "+str(vid)+"-"+str(tsCode)+"time out for 1st")
+		try:
+			tsPage = urllib2.urlopen(request, timeout=3)
+			tsContent = tsPage.read()
+			except Exception, e:
+				logger.debug(e)
+				logger.debug("205 "+str(vid)+"-"+str(tsCode)+"time out for 2nd")
+				try:
+					tsPage = urllib2.urlopen(request, timeout=3)
+					tsContent = tsPage.read()
+				except Exception, e:
+					logger.debug(e)
+					logger.debug("205 "+str(vid)+"-"+str(tsCode)+"time out for 3rd")
+					return True
 	logger.debug("end video"+str(vid)+"-"+str(tsCode)+"at: "+datetime.now().strftime("%T")+", successful")
 	logger.debug("###########DEBUG###########")
 	fp = open(TSPATH+date+"-"+str(vid)+"-"+tsCode+".ts", "w")
