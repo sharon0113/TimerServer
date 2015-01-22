@@ -167,7 +167,7 @@ class M3u8LiveDownloader(object):
 					else:
 						tsCode = "00000X"
 					if self.isFirstTime:
-						if urlCount > 360:
+						if urlCount > 343:
 							state = urlDownloader(url, tsCode, self.vid)
 							self.tsDownloadSet.add(tsCode)
 						else:
