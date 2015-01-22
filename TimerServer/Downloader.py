@@ -79,7 +79,6 @@ class M3u8LiveDownloader(object):
 				logger.debug(str(self.liveUrl))
 				sleep(1)
 				continue
-
 		pageContent = webPage.read()
 		pageContent=pageContent.replace(" ", "").replace("\t", "").replace("\n", "")
 		#http://web-play.pptv.com/web-m3u8-300617.m3u8?type=m3u8.web.pad;playback=0;kk=;o=leader.pptv.com;rcc_id=0
@@ -124,15 +123,13 @@ class M3u8LiveDownloader(object):
 		
 		while(True):
 			try:
-				m3u8Page = urllib2.urlopen(request,timeout=3)
+				m3u8Page = urllib2.urlopen(request, timeout=3)
 				break
 			except Exception, e:
 				logger.debug("time out for m3u8")
 				logger.debug(str(self.m3u8Url))
 				sleep(1)
 				continue
-
-
 		m3u8Content = m3u8Page.read()
 		logger.debug("Downloading m3u8 level 1...")
 		fp = open(M3U8PATH+date+"-"+str(self.vid)+".m3u", "w")
