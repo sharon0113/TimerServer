@@ -57,13 +57,13 @@ def urlDownloader(url, tsCode, vid):
 
 class M3u8LiveDownloader(object):
 
-	def __init__(self, url, downloadSet, vid):
+	def __init__(self, url, downloadSet, vid ,isFirst):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
-		if vid==None:
-			self.isFirstTime = True
-		else:
-			self.isFirstTime = False
+		#if vid==None:
+		self.isFirstTime = isFirst
+		#else:
+		#	self.isFirstTime = False
 		self.vid = vid
 		self.liveUrl = url
 		request = urllib2.Request(self.liveUrl, headers={
@@ -99,9 +99,9 @@ class M3u8LiveDownloader(object):
 				self.m3u8Url = "urlNotExisted"
 		logger.debug(str(self.m3u8Url)+"downloaded")
 		self.name = u"Live Channel"
-		if vid==None:
+		'''if vid==None:
 			vid = liveModel().addLiveItem(self.name, date, self.liveUrl)
-			self.vid = vid
+			self.vid = vid'''
 		self.tsDownloadSet = downloadSet
 
 	def runDownloader(self):
@@ -196,9 +196,9 @@ class M3u8LiveDownloader(object):
 			return {"state":False, "downloadSet":self.tsDownloadSet}
 		logger.debug("###########DEBUG###########")		
 		logger.debug("rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
-		resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
+		'''resultPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "w")
 		resultPointer.write(tempContent)
-		resultPointer.close()
+		resultPointer.close()'''
 		logger.debug("end rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		logger.debug("Congratulations, download finished")
 		logger.debug("###########DEBUG###########")

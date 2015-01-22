@@ -8,7 +8,7 @@ from time import sleep
 from daemonize import Daemonize
 import re
 import logging
-from utils import PORT, ROOT, DOWNLOADINTERVAL, UPDATEINTERVAL, FREQUENCY
+from utils import PORT, ROOT, DOWNLOADINTERVAL, UPDATEINTERVAL, FREQUENCY,M3U8NEWPATH
 
 fh = logging.FileHandler("test.log", "w")
 fh.setLevel(logging.DEBUG)
@@ -85,11 +85,16 @@ def runTimer():
 				if liveUrl in InfoList.keys():
 					currentInfolist[liveUrl] = InfoList[liveUrl]
 					vid = liveModel().getVidByUrl(liveUrl)
-					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid).runDownloader()
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid,False).runDownloader()
 				else:
 					currentInfolist[liveUrl] = set([])
 					InfoList[liveUrl] = currentInfolist[liveUrl]
-					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], None).runDownloader()
+					date = datetime.now().strftime("%Y-%m-%d")
+					vid = liveModel().addLiveItem('name', date, liveUrl)
+					resultPointer = open(M3U8NEWPATH+date+"-"+str(vid)+".m3u", "w")
+                			resultPointer.close()
+					currentSet = M3u8LiveDownloader(liveUrl, currentInfolist[liveUrl], vid,True).runDownloader()
+					
 				if currentSet["state"] == True:
 					InfoList[liveUrl] = currentSet["downloadSet"]
 				else:
@@ -106,11 +111,11 @@ def runTimer():
 if __name__=='__main__':
 	pid="timer.pid"
 	
-	keep_fds = [fh.stream.fileno()]
+	#keep_fds = [fh.stream.fileno()]
 	#servermain()
-	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
-	daemon.start()
-	#runTimer()
+	#daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	#daemon.start()
+	runTimer()
 
 
 
