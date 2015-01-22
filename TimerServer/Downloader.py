@@ -66,6 +66,7 @@ class M3u8LiveDownloader(object):
 		request = urllib2.Request(self.liveUrl, headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
+		isFailed = True
 		while isFailed:
 			try:
 				webPage = urllib2.urlopen(request, timeout = 3)
@@ -112,6 +113,7 @@ class M3u8LiveDownloader(object):
 		request = urllib2.Request(self.m3u8Url, headers={
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
+		isFailed = True
 		while isFailed:
 			try:
 				m3u8Page = urllib2.urlopen(request, timeout=3)
@@ -143,9 +145,10 @@ class M3u8LiveDownloader(object):
 				currentRequest = urllib2.Request(m3u8SubUrl, headers={
 				"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 				})
+				isFailed = True
 				while isFailed:
 					try:
-						m3u8SubPage = urllib2.urlopen(currentRequest， timeout=3)
+						m3u8SubPage = urllib2.urlopen(currentRequest,  timeout=3)
 						isFailed = False
 					except Exception, e:
 						logger.error("903 m3u8SubPage request time out")
