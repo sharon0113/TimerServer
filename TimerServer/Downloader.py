@@ -30,7 +30,7 @@ def urlDownloader(url, tsCode, vid):
 	logger.debug("###########DEBUG###########")
 	logger.debug("downloading video"+str(vid)+"-"+str(tsCode)+"start at: "+datetime.now().strftime("%T"))
 	try:
-		tsPage = urllib2.urlopen(request, timeout=2)
+		tsPage = urllib2.urlopen(request, timeout=3)
 		tsContent = tsPage.read()
 	except Exception, e:
 		logger.debug(e)
@@ -48,6 +48,10 @@ class M3u8LiveDownloader(object):
 	def __init__(self, url, downloadSet, vid):
 		super(M3u8LiveDownloader, self).__init__()
 		date = datetime.now().strftime("%Y-%m-%d")
+		if vid=None:
+			self.isFirstTime = True
+		else:
+			self.isFirstTime = False
 		self.vid = vid
 		self.liveUrl = url
 		request = urllib2.Request(self.liveUrl, headers={
@@ -149,23 +153,25 @@ class M3u8LiveDownloader(object):
 						tsCode = matcher.group().replace(".ts", "")
 					else:
 						tsCode = "00000X"
-					if tsCode not in self.tsDownloadSet and tsCode != "00000X":
-						# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
-						# threadPool.append(currentThread)
-						state = urlDownloader(url, tsCode, self.vid)
-						self.tsDownloadSet.add(tsCode)
+					if self.isFirstTime:
+						if urlCount > 360:
+							state = urlDownloader(url, tsCode, self.vid)
+							self.tsDownloadSet.add(tsCode)
+						else:
+							state = True
 					else:
-						# logger.debug(str(tsCode) +"already downloaded, pass it")
+						if tsCode not in self.tsDownloadSet and tsCode != "00000X":
+							# currentThread = MyThread(urlDownloader, (url, tsCode, self.vid), str(self.vid))
+							# threadPool.append(currentThread)
+							state = urlDownloader(url, tsCode, self.vid)
+							self.tsDownloadSet.add(tsCode)
+						else:
+							state = True
+							# logger.debug(str(tsCode) +"already downloaded, pass it")
 					if state:
 						tempContent = tempContent + "#EXTINF:5,\n"+PORT+"pptvlive/readlivets"+"_"+str(self.vid)+"_"+tsCode+".ts?tsCode="+tsCode+"&vid="+str(self.vid)+"\n"
 					# tempPointer = open(M3U8NEWPATH+date+"-"+str(self.vid)+".m3u", "a+") 
 					# tempPointer.seek(0,2)
-				# for thread in threadPool:
-				# 	thread.start()
-				# logger.debug(str(threading.activeCount())+"has been initialized...")
-				# for thread in threadPool:
-				# 	thread.join()
-				# 	logger.debug("one thread finished, "+str(threading.activeCount())+" remaining...")
 				logger.debug("end multithread at: "+datetime.now().strftime("%T"))
 				# logger.debug("##########MULTITHREAD#########")
 				break
@@ -180,5 +186,6 @@ class M3u8LiveDownloader(object):
 		resultPointer.close()
 		logger.debug("end rewrite video  "+str(self.vid)+"  at: "+datetime.now().strftime("%T"))
 		logger.debug("Congratulations, download finished")
+		logger.debug("###########DEBUG###########")
 		return {"state":True, "downloadSet":self.tsDownloadSet}
 
