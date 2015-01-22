@@ -67,14 +67,15 @@ class M3u8LiveDownloader(object):
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
 		isFailed = True
-		while isFailed:
-			try:
-				webPage = urllib2.urlopen(request, timeout = 3)
-				isFailed = False
-			except Exception, e:
-				logger.error("901 web page request time out")
-				isFailed = True
-
+		# while isFailed:
+		# 	try:
+		# 		webPage = urllib2.urlopen(request, timeout = 3)
+		# 		isFailed = False
+		# 	except Exception, e:
+		# 		sleep(2)
+		# 		logger.error("901 web page request time out")
+		# 		isFailed = True
+		webPage = urllib2.urlopen(request)
 		pageContent = webPage.read()
 		pageContent=pageContent.replace(" ", "").replace("\t", "").replace("\n", "")
 		#http://web-play.pptv.com/web-m3u8-300617.m3u8?type=m3u8.web.pad;playback=0;kk=;o=leader.pptv.com;rcc_id=0
@@ -114,13 +115,14 @@ class M3u8LiveDownloader(object):
 			"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 			})
 		isFailed = True
-		while isFailed:
-			try:
-				m3u8Page = urllib2.urlopen(request, timeout=3)
-				isFailed = False
-			except Exception, e:
-				logger.error("902 m3u8Page request time out")
-				isFailed = True
+		# while isFailed:
+		# 	try:
+		# 		m3u8Page = urllib2.urlopen(request, timeout=3)
+		# 		isFailed = False
+		# 	except Exception, e:
+		# 		logger.error("902 m3u8Page request time out")
+		# 		isFailed = True
+		m3u8Page = urllib2.urlopen(request)
 		m3u8Content = m3u8Page.read()
 		logger.debug("Downloading m3u8 level 1...")
 		fp = open(M3U8PATH+date+"-"+str(self.vid)+".m3u", "w")
@@ -145,14 +147,15 @@ class M3u8LiveDownloader(object):
 				currentRequest = urllib2.Request(m3u8SubUrl, headers={
 				"user-agent": "Mozilla/5.0 (iPad; CPU OS 8_1 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12B410 Safari/600.1.4",
 				})
-				isFailed = True
-				while isFailed:
-					try:
-						m3u8SubPage = urllib2.urlopen(currentRequest,  timeout=3)
-						isFailed = False
-					except Exception, e:
-						logger.error("903 m3u8SubPage request time out")
-						isFailed = True
+				# isFailed = True
+				# while isFailed:
+				# 	try:
+				# 		m3u8SubPage = urllib2.urlopen(currentRequest,  timeout=3)
+				# 		isFailed = False
+				# 	except Exception, e:
+				# 		logger.error("903 m3u8SubPage request time out")
+				# 		isFailed = True
+				m3u8SubPage = urllib2.urlopen(currentRequest)
 				m3u8SubContent = m3u8SubPage.read()
 				fp = open(M3U8SUBPATH+date+"-"+str(self.vid)+"-"+ipCode+".m3u", "w")
 				fp.write(m3u8SubContent)
