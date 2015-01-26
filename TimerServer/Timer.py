@@ -111,11 +111,11 @@ def runTimer():
 if __name__=='__main__':
 	pid="timer.pid"
 	
-	#keep_fds = [fh.stream.fileno()]
+	keep_fds = [fh.stream.fileno()]
 	#servermain()
-	#daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
-	#daemon.start()
-	runTimer()
+	daemon = Daemonize(app="jobs", pid=pid, action=runTimer,keep_fds=keep_fds)
+	daemon.start()
+	#runTimer()
 
 
 

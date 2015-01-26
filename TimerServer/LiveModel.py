@@ -10,7 +10,7 @@ class liveModel(object):
 
 	def __init__(self):
 		super(liveModel, self).__init__()
-		connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="yiqiding1314", db="pptv" )
+		connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="***", passwd="****", db="pptv" )
 		#connection = MySQLdb.connect(host="127.0.0.1", port=3306, user="root", passwd="", db="resource" )
 		self.cursor = connection.cursor()
 
